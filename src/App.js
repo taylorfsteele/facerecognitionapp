@@ -9,6 +9,7 @@ import ParticleOptions from './ParticleOptions';
 import Clarifai from 'clarifai';
 import SignIn from './Components/SignIn/SignIn';
 import './App.css';
+import Register from './Components/Register/Register';
 
 const app = new Clarifai.App({
   apiKey: '4c9b2ab0098840c09e52bc2203788902'
@@ -20,7 +21,9 @@ class App extends Component {
     this.state = {
       input: '',
       imageUrl: '',
-      box: {}
+      box: {},
+      route: 'signin',
+      isSignedIn: false
     }
   }
 
@@ -53,19 +56,38 @@ class App extends Component {
       .catch(err => console.log(err));
   }
 
+  onRouteChange = (route) => {
+    if (route === 'signin') {
+      this.setState({ isSignedIn: false })
+    } else if (route === 'home') {
+      this.setState({ isSignedIn: true })
+    }
+    this.setState({ route: route })
+  }
+
 
   render() {
+    // I could use destructuring here to make it cleaner. I'm going to keep it as is for learning purposes.
+    // { isSignedIn, imageUrl, route, box } = this.state;
     return (
       <div className="App">
         <Particles className='particles' params={ParticleOptions} />
         <div className='App-header'>
           <Logo />
-          <Navigation />
+          <Navigation isSignedIn={this.state.isSignedIn} onRouteChange={this.onRouteChange} />
         </div>
-        <SignIn />
-        <Rank />
-        <ImageLinkForm onInputChange={this.onInputChange} onButtonSubmit={this.onButtonSubmit} />
-        <FaceRecognition box={this.state.box} imageUrl={this.state.imageUrl} />
+        {this.state.route === 'home'
+          ? <div>
+            <Rank />
+            <ImageLinkForm onInputChange={this.onInputChange} onButtonSubmit={this.onButtonSubmit} />
+            <FaceRecognition box={this.state.box} imageUrl={this.state.imageUrl} />
+          </div>
+          : (
+            this.state.route === 'signin'
+              ? <SignIn onRouteChange={this.onRouteChange} />
+              : <Register onRouteChange={this.onRouteChange} />
+          )
+        }
       </div >
     );
   }
