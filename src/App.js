@@ -47,8 +47,8 @@ class App extends Component {
   }
 
 
-  calculateFaceLocation = (data) => {
-    const clarifaiFace = data.outputs[0].data.regions[0].region_info.bounding_box;
+  calculateFaceLocation = (faceData) => {
+    const clarifaiFace = faceData.outputs[0].data.regions[0].region_info.bounding_box;
     const image = document.getElementById('inputimage');
     const width = Number(image.width);
     const height = Number(image.height);
@@ -70,7 +70,7 @@ class App extends Component {
 
   onPictureSubmit = () => {
     this.setState({ imageUrl: this.state.input });
-    fetch('http://localhost:3001/image', {
+    fetch('http://localhost:3001/imageurl', {
       method: 'post',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -91,11 +91,10 @@ class App extends Component {
             .then(count => {
               this.setState(Object.assign(this.state.user, { entries: count }))
             })
-            .catch(console.log)
         }
         this.displayFaceBox(this.calculateFaceLocation(response))
       })
-      .catch(err => console.log(err));
+      .catch(err => console.log('Breakpoint 6 ' + err));
   }
 
   onRouteChange = (route) => {
